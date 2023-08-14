@@ -33,32 +33,43 @@ public class DepenseServiceImpl implements IDepenseService{
 
         Depense depenseVerif = null;
 
-        depenseVerif = repositoryDepense.findByDescription(depense.getDescription());
-        if (depenseVerif!=null)
-            throw new NotFoundException("Depense existe deja !");
+//        depenseVerif = repositoryDepense.findByDescription(depense.getDescription());
+//        if (depenseVerif!=null)
+//            throw new NotFoundException("Depense existe deja !");
 
-        if (dateDepense.isAfter(LocalDate.now()) || dateDepense.isBefore(dateDebutBudget))
-           throw new NotFoundException("Verifier la date de votre systeme !");
+//        if (dateDepense.isAfter(LocalDate.now()))
+//           throw new NotFoundException("Vous ne pouvez pas effectuer une depense au date passe");
+//
+//        if (dateDepense.isBefore(dateDebutBudget))
+//            throw new NotFoundException("Vous ne pouvez pas effectuer une depense apres la date de debut de budget");
 
         switch (typeDepense.getNomTypeDepense()){
             case "quotidient":
-                depenseVerif = repositoryDepense.findByUtilisateurDepenseAndTypeDepenseAndBudgetDepenseAndDate(utilisateur,typeDepense,budget,dateDepense);
+//                depenseVerif = repositoryDepense.findByUtilisateurDepenseAndTypeDepenseAndBudgetDepenseAndDate(utilisateur,typeDepense,budget,dateDepense);
+//                if (depenseVerif!=null)
+                depenseVerif = repositoryDepense.findByDescription(depense.getDescription());
                 if (depenseVerif!=null)
                     throw new NotFoundException("Vous avez deja effectue une depense aujourd'hui");
                 budgetService.montantReduit(depense);
                 break;
 
             case "hebdomadaire":
-                depenseVerif = repositoryDepense.findFirstByUtilisateurDepenseAndTypeDepenseAndBudgetDepenseOrderByDateDesc(utilisateur,typeDepense,budget);
+//                depenseVerif = repositoryDepense.findFirstByUtilisateurDepenseAndTypeDepenseAndBudgetDepenseOrderByDateDesc(utilisateur,typeDepense,budget);
+//                if (depenseVerif!=null)
+                depenseVerif = repositoryDepense.findByDescription(depense.getDescription());
                 if (depenseVerif!=null)
+                    depenseVerif = repositoryDepense.findByDescription(depense.getDescription());
+                    if (depenseVerif!=null)
                        if (depenseVerif.getDate().plusDays(7).isAfter(LocalDate.now()))
                         throw new NotFoundException("Vous avez deja effectue une depense cette semaine");
                 budgetService.montantReduit(depense);
                 break;
 
             case "mensuel":
-                depenseVerif = repositoryDepense.findFirstByUtilisateurDepenseAndTypeDepenseAndBudgetDepenseOrderByDateDesc(utilisateur,typeDepense,budget);
-                if (depenseVerif!=null)
+//                depenseVerif = repositoryDepense.findFirstByUtilisateurDepenseAndTypeDepenseAndBudgetDepenseOrderByDateDesc(utilisateur,typeDepense,budget);
+//                if (depenseVerif!=null)
+                    depenseVerif = repositoryDepense.findByDescription(depense.getDescription());
+                    if (depenseVerif!=null)
                     if (depenseVerif.getDate().plusDays(30).isAfter(LocalDate.now()))
                         throw new NotFoundException("Vous avez deja effectue une depense cet mois");
                 budgetService.montantReduit(depense);

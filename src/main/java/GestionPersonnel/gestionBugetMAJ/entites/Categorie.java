@@ -23,7 +23,7 @@ public class Categorie {
     private String nom;
 
     @OneToMany(mappedBy = "categorieBudget")
-//    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<Budget> budgetCategorie;
 
     @ManyToOne

@@ -36,12 +36,30 @@ public class BudgetServiceImpl implements IBudgetService {
         LocalDate dateToDate = LocalDate.now();
 
 
-        Budget budgetVerif = repositoryBudget.findByUtilisateurBudgetAndCategorieBudgetAndDateFin(utilisateur,categorie,dateDeFin);
-        if (budgetVerif!=null)
-            throw new NotFoundException("Ce budget existe déjà");
+        Budget budgetVerif = null;
 
-        if (dateDebut.isBefore(dateToDate)||dateDebut.getYear()!=dateToDate.getYear())
-            throw new NotFoundException("Veuillez entrer une date valide !!!");
+        budgetVerif = repositoryBudget.findByUtilisateurBudgetAndCategorieBudgetAndDateFin(utilisateur,categorie,dateDeFin);
+        if (budgetVerif!=null)
+            throw new NotFoundException("Desole, cet budget existe déjà");
+
+        int montantAlert =budget.getMontantAlert();
+        int montantPrincipal = budget.getMontant();
+        int montantRestant = budget.getMontantRestant();
+
+        if (montantPrincipal < montantAlert)
+            throw new NotFoundException("Desole, montant alert est superieur au montant principal");
+
+//        if (montantRestant!=montantPrincipal)
+//            throw new NotFoundException("Desole, montant restant est different du montant principal");
+
+//        if (dateDebut.isBefore(dateToDate)||dateDebut.getYear()!=dateToDate.getYear())
+//            throw new NotFoundException("Veuillez entrer une date valide  !!!");
+
+        if (dateDebut.isBefore(dateToDate))
+            throw new NotFoundException("Veuillez entrer la date d'aujourd'hui !!!");
+
+        if (dateDebut.getYear()!=dateToDate.getYear())
+            throw new NotFoundException("Vous ne pouvez pas prevoir un budget au dela de un an");
 
         LocalDate dateBudgetPrecedent = dateDeFin.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
         Budget budgetPrecedent = repositoryBudget.findByUtilisateurBudgetAndCategorieBudgetAndDateFin(utilisateur,categorie,dateBudgetPrecedent);
@@ -56,8 +74,9 @@ public class BudgetServiceImpl implements IBudgetService {
                 }
             }
         }
-         repositoryBudget.save(budget);
-        return "Budget defini";
+        budget.setMontantRestant(montantPrincipal);
+        repositoryBudget.save(budget);
+        return "Budget defini !!";
     }
 
     @Override

@@ -24,6 +24,7 @@ public class AlertServiceImpl implements IAlertService{
 
     @Override
     public void envoiAlert(Budget budget) {
+
         int montantAlert = budget.getMontantAlert();
         Utilisateur utilisateur = budget.getUtilisateurBudget();
         Categorie categorie = budget.getCategorieBudget();
@@ -32,10 +33,10 @@ public class AlertServiceImpl implements IAlertService{
         String sender = "sogoreibrahimodk@gmail.com";
         String message = null;
 
-        if (montantAlert==0){
+        if (montantAlert==0)
            message = "Mr/Mme "+utilisateur.getNom()+", votre budget de "+budget.getMontant()+" " +
                    ",de la categorie "+categorie.getNom()+" est de 0 franc";
-        }else {
+        else {
             message = "Mr/Mme "+utilisateur.getNom()+", votre budget "+budget.getMontant()+" " +
                     ",de la categorie "+categorie.getNom()+" atteint le montant d'alerte de"+budget.getMontantAlert();
         }
