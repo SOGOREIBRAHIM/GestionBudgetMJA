@@ -22,16 +22,18 @@ public class DepenseServiceImpl implements IDepenseService{
 
     @Override
     public Depense effetuer(Depense depense) {
+
         LocalDate dateDebutBudget = depense.getBudgetDepense().getDateDebut();
         LocalDate dateDepense = depense.getDate();
-
         Utilisateur utilisateur = depense.getUtilisateurDepense();
+//        if (utilisateur==null)
+//            throw new NotFoundException("Entrez un utilisateur");
         Budget budget = depense.getBudgetDepense();
         TypeDepense typeDepense = depense.getTypeDepense();
 
         Depense depenseVerif = null;
 
-        if (dateDepense.isAfter(LocalDate.now()) || dateDepense.isBefore(LocalDate.now()) || dateDepense.isBefore(dateDebutBudget)){
+        if (dateDepense.isAfter(LocalDate.now()) || dateDepense.isBefore(dateDebutBudget)){
            throw new NotFoundException("Verifier votre date de depense !");
         }
 
@@ -86,6 +88,7 @@ public class DepenseServiceImpl implements IDepenseService{
     public String supprimer(Long idDepense) {
         Depense depense =repositoryDepense.findByIdDepense(idDepense);
         if (depense!=null){
+            budgetService.supprmerMontantBudget(depense);
             repositoryDepense.deleteById(idDepense);
             return "depense supprimer";
         } throw new DuplicateException("depense avec ID "+idDepense+" n'existe pas");

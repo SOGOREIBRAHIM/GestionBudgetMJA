@@ -44,10 +44,5 @@ public class CategorieController {
         return categorieService.supprimer(idCategorie);
     }
 
-    @DeleteMapping("/delete/{idCategorie}")
-    private String supprimerId(@PathVariable Long idCategorie){
-        return categorieService.supprimer(idCategorie);
-    }
-
 
 }

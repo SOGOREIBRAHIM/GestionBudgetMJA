@@ -28,12 +28,12 @@ public class DepenseController {
     private List list(Depense depense){
         return depenseService.afficher();
     }
-    @DeleteMapping("/supprimer/{idDepense}")
-    private String supprimer(@PathVariable Long idDepense){
+    @DeleteMapping("/supprimer")
+    private String supprimer(@RequestParam("idDepense") Long idDepense){
         return depenseService.supprimer(idDepense);
     }
-    @GetMapping("/lire/{idDepense}")
-    private Depense lire(@PathVariable Long idDepense){
+    @GetMapping("/lire")
+    private Depense lire(@RequestParam Long idDepense){
         return  depenseService.lire(idDepense);
     }
 }

@@ -3,7 +3,9 @@ package GestionPersonnel.gestionBugetMAJ.services;
 
 
 import GestionPersonnel.gestionBugetMAJ.entites.Budget;
+import GestionPersonnel.gestionBugetMAJ.entites.Categorie;
 import GestionPersonnel.gestionBugetMAJ.entites.Depense;
+import GestionPersonnel.gestionBugetMAJ.entites.Utilisateur;
 import GestionPersonnel.gestionBugetMAJ.exception.DuplicateException;
 import GestionPersonnel.gestionBugetMAJ.exception.InvalideException;
 import GestionPersonnel.gestionBugetMAJ.exception.NotFoundException;
@@ -13,6 +15,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Service
@@ -25,18 +28,36 @@ public class BudgetServiceImpl implements IBudgetService {
 
     @Override
     public String creer(Budget budget) {
-        Budget titreVerif = repositoryBudget.findByTitre(budget.getTitre());
-        if (titreVerif!=null){
-            throw new DuplicateException("Le buget existe");
-        }
-        LocalDate dateDebutVerif = budget.getDateDebut();
-        if (dateDebutVerif.isAfter(LocalDate.now()) || dateDebutVerif.isBefore(LocalDate.now())){
-            throw new NotFoundException("Entre une date valide !");
-        }
-        budget.setDateFin(dateDebutVerif.plusDays(30));
-        repositoryBudget.save(budget);
-        return "Budget creer";
+        Categorie categorie = budget.getCategorieBudget();
+        Utilisateur utilisateur = budget.getUtilisateurBudget();
+        LocalDate dateDebut = budget.getDateDebut();
+        LocalDate dateDeFin = dateDebut.with(TemporalAdjusters.lastDayOfMonth());
+        budget.setDateFin(dateDeFin);
+        LocalDate dateToDate = LocalDate.now();
 
+
+        Budget budgetVerif = repositoryBudget.findByUtilisateurBudgetAndCategorieBudgetAndDateFin(utilisateur,categorie,dateDeFin);
+        if (budgetVerif!=null)
+            throw new NotFoundException("Ce budget existe déjà");
+
+        if (dateDebut.isBefore(dateToDate)||dateDebut.getYear()!=dateToDate.getYear())
+            throw new NotFoundException("Veuillez entrer une date valide !!!");
+
+        LocalDate dateBudgetPrecedent = dateDeFin.minusMonths(1).with(TemporalAdjusters.lastDayOfMonth());
+        Budget budgetPrecedent = repositoryBudget.findByUtilisateurBudgetAndCategorieBudgetAndDateFin(utilisateur,categorie,dateBudgetPrecedent);
+        if (budgetPrecedent!=null){
+            if (dateBudgetPrecedent.isBefore(dateToDate)){
+                int montantRestantPrecedentBudget = budgetPrecedent.getMontantRestant();
+                if (montantRestantPrecedentBudget>0){
+                    int montantActuelBudget = budget.getMontant() + montantRestantPrecedentBudget;
+                    int montantRestantActuelBudget = budget.getMontantRestant() + montantRestantPrecedentBudget;
+                    budget.setMontant(montantActuelBudget);
+                    budget.setMontantRestant(montantRestantActuelBudget);
+                }
+            }
+        }
+         repositoryBudget.save(budget);
+        return "Budget defini";
     }
 
     @Override
@@ -53,11 +74,11 @@ public class BudgetServiceImpl implements IBudgetService {
 
     @Override
     public String modifier(Budget budget) {
-        Budget budget1 = repositoryBudget.findByTitre(budget.getTitre());
-        if (budget1==null){
+            Budget dateVerif = repositoryBudget.findByDateDebutAndDateFin(budget.getDateDebut(),budget.getDateFin());
+        if (dateVerif==null){
             repositoryBudget.save(budget);
             return "Budget modifie";
-        }else {
+        } else {
             throw new NotFoundException("Budget existe deja !");
         }
     }
@@ -105,7 +126,8 @@ public class BudgetServiceImpl implements IBudgetService {
 
     @Override
     public void supprmerMontantBudget(Depense depense) {
-        Budget depenseBudget = repositoryBudget.findByIdBudget(depense.getBudgetDepense().getIdBudget());
+        Budget budget = depense.getBudgetDepense();
+        budget.setMontantRestant(budget.getMontantRestant() + depense.getMontant());
     }
 
 }

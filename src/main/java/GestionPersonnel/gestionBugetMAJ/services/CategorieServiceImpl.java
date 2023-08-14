@@ -20,17 +20,17 @@ public class CategorieServiceImpl implements ICategorieService {
 
     @Override
     public String creer(Categorie categorie) {
-        Categorie categorie1 = repositoryCategorie.findByNom(categorie.getNom());
+        Categorie categorie1 = repositoryCategorie.findByNomAndUtilisateurCategorie(categorie.getNom(),categorie.getUtilisateurCategorie());
         if (categorie1==null){
             repositoryCategorie.save(categorie);
             return "Categorie enregistre";
         }
-        throw new NotFoundException("Categorie existe deja un categorie");
+        throw new NotFoundException("Categorie existe deja");
     }
 
     @Override
     public String modifier(Categorie categorie) {
-        Categorie categorie1 = repositoryCategorie.findByNom(categorie.getNom());
+        Categorie categorie1 = repositoryCategorie.findByNomAndUtilisateurCategorie(categorie.getNom(),categorie.getUtilisateurCategorie());
         if (categorie1==null){
             repositoryCategorie.save(categorie);
             return "Categorie modifier";
@@ -52,7 +52,8 @@ public class CategorieServiceImpl implements ICategorieService {
 
     @Override
     public String supprimer(Long idCategorie) {
-        Optional<Categorie> categorie = repositoryCategorie.findById(idCategorie);
+        Categorie categorie = repositoryCategorie.findByIdCategory(idCategorie);
+        int test = 0;
         if (categorie!=null){
             repositoryCategorie.deleteById(idCategorie);
             return "Categorie supprimer";
