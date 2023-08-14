@@ -33,9 +33,12 @@ public class DepenseServiceImpl implements IDepenseService{
 
         Depense depenseVerif = null;
 
-        if (dateDepense.isAfter(LocalDate.now()) || dateDepense.isBefore(dateDebutBudget)){
-           throw new NotFoundException("Verifier votre date de depense !");
-        }
+        depenseVerif = repositoryDepense.findByDescription(depense.getDescription());
+        if (depenseVerif!=null)
+            throw new NotFoundException("Depense existe deja !");
+
+        if (dateDepense.isAfter(LocalDate.now()) || dateDepense.isBefore(dateDebutBudget))
+           throw new NotFoundException("Verifier la date de votre systeme !");
 
         switch (typeDepense.getNomTypeDepense()){
             case "quotidient":

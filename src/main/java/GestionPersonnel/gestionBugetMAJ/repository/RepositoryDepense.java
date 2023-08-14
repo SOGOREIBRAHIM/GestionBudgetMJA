@@ -8,10 +8,12 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
 public interface RepositoryDepense extends JpaRepository<Depense,Long > {
 
     Depense findByDescription(String description);
+    List<Depense> findByBudgetDepenseIdBudget(Long idBudget);
     Depense findByIdDepense(Long idDepense);
 
     Depense findByUtilisateurDepenseAndTypeDepenseAndBudgetDepenseAndDate(Utilisateur utilisateur, TypeDepense typeDepense, Budget budget, LocalDate date);

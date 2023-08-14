@@ -86,12 +86,21 @@ public class BudgetServiceImpl implements IBudgetService {
     @Override
     public String supprimer(Long idBudget) {
         Budget budget = repositoryBudget.findByIdBudget(idBudget);
-        if (budget==null){
-            throw new InvalideException("Identifiant n'existe pas !");
-        }else {
-            repositoryBudget.deleteById(idBudget);
-            return "Identifiant supprimer";
+        if (budget!=null){
+            List<Depense> depenseBudget = repositoryDepense.findByBudgetDepenseIdBudget(idBudget);
+            if (depenseBudget!=null){
+                throw new InvalideException("Une depense est associe a cet budget !");
+            }
         }
+        repositoryBudget.deleteById(idBudget);
+        return "Identifiant supprimer";
+//        Budget budget = repositoryBudget.findByIdBudget(idBudget);
+//        if (budget==null){
+//            throw new InvalideException("Identifiant n'existe pas !");
+//        }else {
+//            repositoryBudget.deleteById(idBudget);
+//            return "Identifiant supprimer";
+//        }
     }
 
     @Override
