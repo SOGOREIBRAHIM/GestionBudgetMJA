@@ -44,7 +44,6 @@ public class BudgetServiceImpl implements IBudgetService {
 
         int montantAlert =budget.getMontantAlert();
         int montantPrincipal = budget.getMontant();
-        int montantRestant = budget.getMontantRestant();
 
         if (montantPrincipal < montantAlert)
             throw new NotFoundException("Desole, montant alert est superieur au montant principal");
@@ -107,7 +106,7 @@ public class BudgetServiceImpl implements IBudgetService {
         Budget budget = repositoryBudget.findByIdBudget(idBudget);
         if (budget!=null){
             List<Depense> depenseBudget = repositoryDepense.findByBudgetDepenseIdBudget(idBudget);
-            if (depenseBudget!=null){
+            if (depenseBudget.isEmpty()){
                 throw new InvalideException("Une depense est associe a cet budget !");
             }
         }
@@ -127,13 +126,14 @@ public class BudgetServiceImpl implements IBudgetService {
         int montantDepense = depense.getMontant();
         Budget budget = repositoryBudget.findByIdBudget(depense.getBudgetDepense().getIdBudget());
         int montantBudgetRestant = budget.getMontantRestant();
+        int montantBudgetAlert = budget.getMontantAlert();
         if (montantDepense > montantBudgetRestant){
             throw new NotFoundException("Desole votre solde est insuffisant pour ce depense");
         }
         int reste = montantBudgetRestant - montantDepense;
         budget.setMontantRestant(reste);
 //        Declanchement du message d'alert
-        if (budget.getMontantRestant() <= montantBudgetRestant){
+        if (budget.getMontantRestant() <= montantBudgetAlert){
             alertService.envoiAlert(budget);
         }
         repositoryBudget.save(budget);
