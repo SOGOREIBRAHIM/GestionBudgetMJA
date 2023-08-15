@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Service
@@ -33,7 +34,7 @@ public class BudgetServiceImpl implements IBudgetService {
         if (dateDebutVerif.isAfter(LocalDate.now()) || dateDebutVerif.isBefore(LocalDate.now())){
             throw new NotFoundException("Entre une date valide !");
         }
-        budget.setDateFin(dateDebutVerif.plusDays(30));
+        budget.setDateFin(dateDebutVerif.with(TemporalAdjusters.lastDayOfMonth()));
         repositoryBudget.save(budget);
         return "Budget creer";
 
